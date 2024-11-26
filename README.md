@@ -85,3 +85,4 @@ Diseño original con una interfaz limpia y amigable, usando colores cálidos y u
 - Más variedad de clientes
 - Opciones de personalización del restaurante
 - Sistema de mejoras y upgrades
+- me donan un cafesito para financiar proyectos https://www.paypal.com/paypalme/MaicolOrtiz805
