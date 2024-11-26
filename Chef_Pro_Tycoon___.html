@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chef Pro Tycoon 🌟</title>
+    <style>
+        /* Estilos generales */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ffe5b4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #game-container {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 800px;
+            margin-top: 20px;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #ff6b6b;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            margin: 5px;
+            background-color: #4ecdc4;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #3cbca4;
+        }
+
+        #customer-queue {
+            margin: 20px 0;
+        }
+
+        .customer {
+            background-color: #f0f0f0;
+            margin: 10px;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .item {
+            margin: 5px;
+            padding: 10px;
+            background-color: #ffe5b4;
+            border: 1px solid #ff6b6b;
+            border-radius: 5px;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .item:hover {
+            background-color: #ffd7a3;
+        }
+
+        #current-order {
+            margin-top: 10px;
+            padding: 15px;
+            border: 2px dashed #ff6b6b;
+            border-radius: 10px;
+            text-align: center;
+            background-color: #f9f9f9;
+        }
+
+        #message {
+            margin-top: 15px;
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <h1>Chef Pro Tycoon 🌟</h1>
+        <div class="stats">
+            <div>💰 Dinero: <span id="money">$100</span></div>
+            <div>📅 Día: <span id="day">1</span></div>
+            <div>⭐ Reputación: <span id="rating">4.0</span></div>
+        </div>
+
+        <div id="current-order">
+            <h3>Pedido en Preparación 🧑‍🍳</h3>
+            <div id="order-food">🌭 Hot Dog: Ninguno</div>
+            <div id="order-drink">🥤 Bebida: Ninguna</div>
+            <div id="order-side">🍟 Acompañamiento: Ninguno</div>
+        </div>
+
+        <div id="food-list">
+            <h3>🌟 Ingredientes del Hot Dog</h3>
+            <div class="item" data-type="pan">🌭 Pan</div>
+            <div class="item" data-type="salchicha">🌭 Salchicha</div>
+            <div class="item" data-type="queso">🧀 Queso</div>
+            <div class="item" data-type="cebolla">🧅 Cebolla</div>
+            <div class="item" data-type="ketchup">🌟 Ketchup</div>
+            <div class="item" data-type="mostaza">🌟 Mostaza</div>
+        </div>
+
+        <div id="drink-list">
+            <h3>🥤 Seleccionar Bebida</h3>
+            <div class="item" data-type="jugo">🍊 Jugo de Naranja</div>
+            <div class="item" data-type="cola">🥤 Refresco Cola</div>
+            <div class="item" data-type="limonada">🍋 Limonada</div>
+        </div>
+
+        <div id="side-list">
+            <h3>🍟 Seleccionar Acompañamiento</h3>
+            <div class="item" data-type="papas">🍟 Papas Fritas</div>
+            <div class="item" data-type="helado">🍦 Helado</div>
+            <div class="item" data-type="ensalada">🥗 Ensalada</div>
+        </div>
+
+        <button class="btn" id="serve-button">✅ Servir Pedido</button>
+        <button class="btn" id="next-day-button">📅 Siguiente Día</button>
+
+        <div id="customer-queue">
+            <h3>👥 Clientes en Espera</h3>
+        </div>
+        <div id="message"></div>
+    </div>
+
+    <script>
+        class ChefProTycoon {
+            constructor() {
+                this.money = 100;
+                this.day = 1;
+                this.rating = 4.0;
+                this.currentHotDog = [];
+                this.currentDrink = null;
+                this.currentSide = null;
+                this.customers = [];
+            }
+
+            startGame() {
+                this.generateCustomers();
+                this.setupEventListeners();
+            }
+
+            generateCustomers() {
+                const customerTypes = [
+                    { 
+                        name: 'Estudiante 🎓', 
+                        preferences: { 
+                            hotDog: ['pan', 'salchicha', 'ketchup'], 
+                            drink: 'jugo', 
+                            side: 'papas' 
+                        } 
+                    },
+                    { 
+                        name: 'Oficinista 💼', 
+                        preferences: { 
+                            hotDog: ['pan', 'salchicha', 'queso'], 
+                            drink: 'cola', 
+                            side: 'helado' 
+                        } 
+                    },
+                    { 
+                        name: 'Deportista 🏋️', 
+                        preferences: { 
+                            hotDog: ['pan', 'salchicha', 'mostaza'], 
+                            drink: 'limonada', 
+                            side: 'ensalada' 
+                        } 
+                    }
+                ];
+
+                for (let i = 0; i < 3; i++) {
+                    const randomCustomer = customerTypes[Math.floor(Math.random() * customerTypes.length)];
+                    this.customers.push(randomCustomer);
+                }
+                this.renderCustomers();
+            }
+
+            renderCustomers() {
+                const queue = document.getElementById('customer-queue');
+                queue.innerHTML = '';
+                this.customers.forEach((customer) => {
+                    const customerDiv = document.createElement('div');
+                    customerDiv.classList.add('customer');
+                    customerDiv.innerHTML = `
+                        <h4>${customer.name}</h4>
+                        <p>Prefiere Hot Dog: ${customer.preferences.hotDog.join(', ')}</p>
+                        <p>Prefiere bebida: ${customer.preferences.drink}</p>
+                        <p>Prefiere acompañamiento: ${customer.preferences.side}</p>
+                    `;
+                    queue.appendChild(customerDiv);
+                });
+            }
+
+            serveOrder() {
+                if (this.customers.length === 0) {
+                    this.showMessage('No hay clientes para servir.');
+                    return;
+                }
+
+                const customer = this.customers.shift();
+                const hotDogMatch = this.currentHotDog.sort().join(',') === customer.preferences.hotDog.sort().join(',');
+                const drinkMatch = customer.preferences.drink === this.currentDrink;
+                const sideMatch = customer.preferences.side === this.currentSide;
+
+                let success = hotDogMatch && drinkMatch && sideMatch;
+
+                if (success) {
+                    this.money += 20;
+                    this.rating += 0.5;
+                    this.showMessage('¡Pedido perfecto! 🎉');
+                } else {
+                    this.rating -= 0.5;
+                    this.showMessage('El pedido no cumplió las expectativas del cliente. 😢');
+                }
+
+                this.updateStats();
+                this.resetOrder();
+                this.renderCustomers();
+            }
+
+            resetOrder() {
+                this.currentHotDog = [];
+                this.currentDrink = null;
+                this.currentSide = null;
+                this.renderOrder();
+            }
+
+            renderOrder() {
+                document.getElementById('order-food').textContent = `🌭 Hot Dog: ${this.currentHotDog.join(', ') || 'Ninguno'}`;
+                document.getElementById('order-drink').textContent = `🥤 Bebida: ${this.currentDrink || 'Ninguna'}`;
+                document.getElementById('order-side').textContent = `🍟 Acompañamiento: ${this.currentSide || 'Ninguno'}`;
+            }
+
+            updateStats() {
+                document.getElementById('money').textContent = `$${this.money}`;
+                document.getElementById('rating').textContent = this.rating.toFixed(1);
+            }
+
+            showMessage(message) {
+                const msg = document.getElementById('message');
+                msg.textContent = message;
+                setTimeout(() => (msg.textContent = ''), 3000);
+            }
+
+            setupEventListeners() {
+                document.getElementById('food-list').addEventListener('click', (e) => {
+                    if (e.target.classList.contains('item')) {
+                        const ingredient = e.target.dataset.type;
+                        if (!this.currentHotDog.includes(ingredient)) {
+                            this.currentHotDog.push(ingredient);
+                        }
+                        this.renderOrder();
+                    }
+                });
+
+                document.getElementById('drink-list').addEventListener('click', (e) => {
+                    if (e.target.classList.contains('item')) {
+                        this.currentDrink = e.target.dataset.type;
+                        this.renderOrder();
+                    }
+                });
+
+                document.getElementById('side-list').addEventListener('click', (e) => {
+                    if (e.target.classList.contains('item')) {
+                        this.currentSide = e.target.dataset.type;
+                        this.renderOrder();
+                    }
+                });
+
+                document.getElementById('serve-button').addEventListener('click', () => this.serveOrder());
+                document.getElementById('next-day-button').addEventListener('click', () => this.nextDay());
+            }
+
+            nextDay() {
+                this.day++;
+                document.getElementById('day').textContent = this.day;
+                this.generateCustomers();
+            }
+        }
+
+        const game = new ChefProTycoon();
+        game.startGame();
+    </script>
+</body>
+</html>
